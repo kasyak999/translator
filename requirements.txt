@@ -1,7 +1,9 @@
 altgraph==0.17.4
 certifi==2024.8.30
 chardet==3.0.4
-googletrans==3.1.0a0
+customtkinter==5.2.2
+darkdetect==0.8.0
+googletrans==3.0.0
 h11==0.9.0
 h2==3.2.0
 hpack==3.0.0

@@ -2,3 +2,5 @@ venv
 .mypy_cache
 __pycache__
 build
+translator_copy.py
+venv_Qwe
