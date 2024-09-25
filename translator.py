@@ -5,6 +5,7 @@ from googletrans import Translator
 import os
 import customtkinter as ctk
 import threading
+import time
 
 
 BYFER = os.popen('xsel -o').read()  # Получаем значение из буфера обмена
@@ -94,45 +95,30 @@ def on_key_press(event, text_1):
         close_app()
 
 
-def load_data(progress_bar):
-    """Функция для имитации загрузки данных."""
-    for i in range(100):  # Обновляем прогресс от 0 до 100
-        progress_bar.set(i / 100)  # Устанавливаем значение прогресс-бара
-
-    # Завершаем загрузку и скрываем прогресс-бар
-    progress_bar.pack_forget()  # Скрываем прогресс-бар
-    frame_1.pack(pady=(10, 10), padx=(10, 10))  # Показываем основной интерфейс
+def main():
+    root.bind("<KeyPress>", lambda event: on_key_press(event, text_1))
+    frame_1.pack(pady=(10, 10), padx=(10, 10))
     frame_2.pack(pady=(0, 10), padx=(10, 10))
     frame_3.pack(pady=(0, 15))
     frame_4.pack(pady=(0, 10))
-
-
-def start_loading():
-    """Запуск загрузки в отдельном потоке."""
-    progress_bar.pack(padx=20, pady=50, fill='x')  # Показываем прогресс-бар
-    threading.Thread(target=load_data, args=(progress_bar,)).start()  # Запускаем загрузку
+    click_translation('ru', text_1, text_2)  # Сразу переводить текст из буфера
 
 
 if __name__ == '__main__':
-    # Создаем окно
     root = ctk.CTk()
     root.title(TITLE)
     root.resizable(False, False)  # Запрещаем изменение размера окна
     root.option_add('*Font', FONT)
 
-    # Создаем прогресс-бар
-    progress_bar = ctk.CTkProgressBar(root, width=WIDTH_TEXT)
-    # progress_bar.set(0)
- 
     # --- frame_1 -------------------------------------
     frame_1 = ctk.CTkFrame(root)
     label_1 = ctk.CTkLabel(frame_1, text="Текст: ", width=90, font=FONT)
     text_1 = ctk.CTkTextbox(
         frame_1, width=WIDTH_TEXT, font=FONT)
+    text_1.insert(tk.END, BYFER)
 
     label_1.pack(side="left", padx=20)
     text_1.pack(side="left")
-    # frame_1.pack(pady=(10, 10), padx=(10, 10))
     # --- / frame_1 -----------------------------------
 
     # --- frame_2 -------------------------------------
@@ -144,7 +130,6 @@ if __name__ == '__main__':
 
     label_2.pack(side="left", padx=20)
     text_2.pack(side="left")
-    # frame_2.pack(pady=(0, 10), padx=(10, 10))
     # --- / frame_2 -----------------------------------
 
     # --- frame_3 -------------------------------------
@@ -160,7 +145,6 @@ if __name__ == '__main__':
 
     button_ru.pack(side="left", padx=10)
     button_en.pack(side="left", padx=10)
-    # frame_3.pack(pady=(0, 15))
     # --- / frame_3 -----------------------------------
 
     # --- frame_4 -------------------------------------
@@ -187,10 +171,6 @@ if __name__ == '__main__':
     button_clear.pack(side="left", padx=10)
     button_help.pack(side="left", padx=10)
     button_exit.pack(side="left", padx=10)
-    # frame_4.pack(pady=(0, 10))
     # --- / frame_4 -----------------------------------
-
-    root.bind("<KeyPress>", lambda event: on_key_press(event, text_1))
-    # click_translation('ru', text_1, text_2)  # Сразу переводить текст из буфера
-    start_loading()
+    main()
     root.mainloop()
