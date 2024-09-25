@@ -4,6 +4,7 @@ from tkinter import messagebox
 from googletrans import Translator
 import os
 import customtkinter as ctk
+import threading
 
 
 BYFER = os.popen('xsel -o').read()  # Получаем значение из буфера обмена
@@ -93,6 +94,25 @@ def on_key_press(event, text_1):
         close_app()
 
 
+def load_data(progress_bar):
+    """Функция для имитации загрузки данных."""
+    for i in range(100):  # Обновляем прогресс от 0 до 100
+        progress_bar.set(i / 100)  # Устанавливаем значение прогресс-бара
+
+    # Завершаем загрузку и скрываем прогресс-бар
+    progress_bar.pack_forget()  # Скрываем прогресс-бар
+    frame_1.pack(pady=(10, 10), padx=(10, 10))  # Показываем основной интерфейс
+    frame_2.pack(pady=(0, 10), padx=(10, 10))
+    frame_3.pack(pady=(0, 15))
+    frame_4.pack(pady=(0, 10))
+
+
+def start_loading():
+    """Запуск загрузки в отдельном потоке."""
+    progress_bar.pack(padx=20, pady=50, fill='x')  # Показываем прогресс-бар
+    threading.Thread(target=load_data, args=(progress_bar,)).start()  # Запускаем загрузку
+
+
 if __name__ == '__main__':
     # Создаем окно
     root = ctk.CTk()
@@ -100,6 +120,10 @@ if __name__ == '__main__':
     root.resizable(False, False)  # Запрещаем изменение размера окна
     root.option_add('*Font', FONT)
 
+    # Создаем прогресс-бар
+    progress_bar = ctk.CTkProgressBar(root, width=WIDTH_TEXT)
+    # progress_bar.set(0)
+ 
     # --- frame_1 -------------------------------------
     frame_1 = ctk.CTkFrame(root)
     label_1 = ctk.CTkLabel(frame_1, text="Текст: ", width=90, font=FONT)
@@ -108,7 +132,7 @@ if __name__ == '__main__':
 
     label_1.pack(side="left", padx=20)
     text_1.pack(side="left")
-    frame_1.pack(pady=(10, 10), padx=(10, 10))
+    # frame_1.pack(pady=(10, 10), padx=(10, 10))
     # --- / frame_1 -----------------------------------
 
     # --- frame_2 -------------------------------------
@@ -120,23 +144,23 @@ if __name__ == '__main__':
 
     label_2.pack(side="left", padx=20)
     text_2.pack(side="left")
-    frame_2.pack(pady=(0, 10), padx=(10, 10))
+    # frame_2.pack(pady=(0, 10), padx=(10, 10))
     # --- / frame_2 -----------------------------------
 
     # --- frame_3 -------------------------------------
     frame_3 = ctk.CTkFrame(root)
     button_ru = ctk.CTkButton(
-        frame_3, text='Перевести на русский',
+        frame_3, text='Перевести на русский 🇷🇺',
         fg_color="green", hover_color="darkgreen", text_color=TEXT_COLOR,
         command=lambda: click_translation('ru', text_1, text_2))
     button_en = ctk.CTkButton(
-        frame_3, text='Перевести на английский',
+        frame_3, text='Перевести на английский 🇺🇸',
         fg_color="blue", hover_color="darkblue", text_color=TEXT_COLOR,
         command=lambda: click_translation('en', text_1, text_2))
 
     button_ru.pack(side="left", padx=10)
     button_en.pack(side="left", padx=10)
-    frame_3.pack(pady=(0, 15))
+    # frame_3.pack(pady=(0, 15))
     # --- / frame_3 -----------------------------------
 
     # --- frame_4 -------------------------------------
@@ -149,7 +173,7 @@ if __name__ == '__main__':
         frame_4, text='Очистить',
         fg_color="gray", hover_color="dimgray", text_color=TEXT_COLOR,
         command=lambda: click_button_clear(text_1, text_2))
-    
+
     button_help = ctk.CTkButton(
         frame_4, text='Помощь',
         fg_color="gray", hover_color="dimgray", text_color=TEXT_COLOR,
@@ -163,9 +187,10 @@ if __name__ == '__main__':
     button_clear.pack(side="left", padx=10)
     button_help.pack(side="left", padx=10)
     button_exit.pack(side="left", padx=10)
-    frame_4.pack(pady=(0, 10))
+    # frame_4.pack(pady=(0, 10))
     # --- / frame_4 -----------------------------------
 
     root.bind("<KeyPress>", lambda event: on_key_press(event, text_1))
-    click_translation('ru', text_1, text_2)  # Сразу переводить текст из буфера
+    # click_translation('ru', text_1, text_2)  # Сразу переводить текст из буфера
+    start_loading()
     root.mainloop()
