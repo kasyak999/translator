@@ -100,9 +100,12 @@ def on_key_press(program, event, value_1, value_2):
         click_translation(program, 'ru', value_1, value_2)
     if event.keysym == 'F3':
         click_translation(program, 'en', value_1, value_2)
+    # if event.keysym == 'Button-1':
+    #     print(111111111)
 
 
 if __name__ == '__main__':
+    ctk.set_appearance_mode("dark")  # темная тема
     root = ctk.CTk()
     root.title(TITLE)
     root.resizable(False, False)  # Запрещаем изменение размера окна
@@ -138,7 +141,7 @@ if __name__ == '__main__':
         fg_color="green", hover_color="darkgreen", text_color=TEXT_COLOR,
         command=lambda: click_translation(root, 'ru', text_1, text_2))
     button_en = ctk.CTkButton(
-        frame_3, text=TRANSLATE_RU,
+        frame_3, text=TRANSLATE_EN,
         fg_color="blue", hover_color="darkblue", text_color=TEXT_COLOR,
         command=lambda: click_translation(root, 'en', text_1, text_2))
 
@@ -177,10 +180,10 @@ if __name__ == '__main__':
 
     root.bind("<KeyPress>", lambda event: on_key_press(
         root, event, text_1, text_2))
+    # root.bind("<Button-3>", context_menu)
     frame_1.pack(pady=(10, 10), padx=(10, 10))
     frame_2.pack(pady=(0, 10), padx=(10, 10))
     frame_3.pack(pady=(0, 15))
     frame_4.pack(pady=(0, 10))
     click_translation(root, 'ru', text_1, text_2)  # переводить текст из буфера
-
     root.mainloop()
