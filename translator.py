@@ -22,10 +22,6 @@ def click_translation(language, text_1, text_2):
     if text_input:
         try:
             translation = translator.translate(text_input, dest=language)
-        except AttributeError as e:
-            error = f'Превышиено количество запросов\n {e}'
-            messagebox.showerror(TITLE, error)
-            raise ConnectionError(error) from e
         except httpcore._exceptions.ConnectError as e:
             error = f'Ошибка подключения к интернету.\n {e}'
             root.withdraw()  # Скрываем основное окно
