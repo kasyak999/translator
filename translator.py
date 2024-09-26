@@ -95,20 +95,12 @@ def on_key_press(event, text_1):
         close_app()
 
 
-def main():
-    root.bind("<KeyPress>", lambda event: on_key_press(event, text_1))
-    frame_1.pack(pady=(10, 10), padx=(10, 10))
-    frame_2.pack(pady=(0, 10), padx=(10, 10))
-    frame_3.pack(pady=(0, 15))
-    frame_4.pack(pady=(0, 10))
-    click_translation('ru', text_1, text_2)  # Сразу переводить текст из буфера
-
-
 if __name__ == '__main__':
     root = ctk.CTk()
     root.title(TITLE)
     root.resizable(False, False)  # Запрещаем изменение размера окна
     root.option_add('*Font', FONT)
+    root.geometry("800x510")  # Ширина 300 пикселей, высота 200 пикселей
 
     # --- frame_1 -------------------------------------
     frame_1 = ctk.CTkFrame(root)
@@ -172,5 +164,12 @@ if __name__ == '__main__':
     button_help.pack(side="left", padx=10)
     button_exit.pack(side="left", padx=10)
     # --- / frame_4 -----------------------------------
-    main()
+
+    root.bind("<KeyPress>", lambda event: on_key_press(event, text_1))
+    frame_1.pack(pady=(10, 10), padx=(10, 10))
+    frame_2.pack(pady=(0, 10), padx=(10, 10))
+    frame_3.pack(pady=(0, 15))
+    frame_4.pack(pady=(0, 10))
+    click_translation('ru', text_1, text_2)  # Сразу переводить текст из буфера
+
     root.mainloop()
