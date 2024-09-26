@@ -4,8 +4,6 @@ from tkinter import messagebox
 from googletrans import Translator
 import os
 import customtkinter as ctk
-import threading
-import time
 
 
 BYFER = os.popen('xsel -o').read()  # Получаем значение из буфера обмена
