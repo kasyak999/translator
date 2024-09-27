@@ -100,17 +100,17 @@ def on_key_press(program, event, value_1, value_2):
     if event.keysym == 'Return':  # Проверяем, нажата ли клавиша Enter
         value_1.focus_set()  # Устанавливаем фокус на value_1
         return "break"  # Игнорируем нажатие Enter
-    if event.keysym == 'Escape':
+    elif event.keysym == 'Escape':
         close_app(program)
-    if event.keysym == 'F1':
+    elif event.keysym == 'F1':
         help_text(program)
-    if event.keysym == 'F2':
+    elif event.keysym == 'F2':
         click_translation(program, 'ru', value_1, value_2)
-    if event.keysym == 'F3':
+    elif event.keysym == 'F3':
         click_translation(program, 'en', value_1, value_2)
-    if event.keysym == 'F4':
+    elif event.keysym == 'F4':
         click_button_byfer(value_1)
-    if event.keysym == 'F5':
+    elif event.keysym == 'F5':
         click_button_clear(value_1, value_2)
     # if event.keysym == 'Button-1':
     #     print(111111111)
@@ -218,5 +218,6 @@ if __name__ == '__main__':
     frame_3.pack(pady=(0, 15))
     frame_4.pack(pady=(0, 10))
     frame_5.pack(pady=(10, 10))
+    
     click_translation(root, 'ru', text_1, text_2)  # переводить текст из буфера
     root.mainloop()
