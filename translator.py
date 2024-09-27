@@ -2,6 +2,7 @@
 import os
 import tkinter as tk
 from tkinter import messagebox
+import webbrowser
 import httpcore
 from googletrans import Translator  # type: ignore
 import customtkinter as ctk  # type: ignore
@@ -10,12 +11,15 @@ import customtkinter as ctk  # type: ignore
 BUFFER = os.popen('xsel -o').read()  # Получаем значение из буфера обмена
 WIDTH_TEXT = 800
 HEIGHT = 8
-TITLE = 'Переводчик v1.4'
+TITLE = 'Переводчик v1.4.1'
 TEXT_COLOR = 'whitesmoke'
 FONT = ("Arial", 20)
 TRANSLATE_RU = 'Перевести на русский 🇷🇺'
 TRANSLATE_EN = 'Перевести на английский 🇺🇸'
+PASTE_BUFFER = 'Вставить из буфера'
+CLEAR = 'Очистить'
 INFO_TEXT = 'Переводчик с любых языков на русский и английский язык'
+GITHUB = 'https://github.com/kasyak999/translator'
 # Инициализация переводчика
 translator = Translator()
 
@@ -71,9 +75,13 @@ def help_text(program):
     text += 'F1 - Помощь\n'
     text += f'F2 - {TRANSLATE_RU}\n'
     text += f'F3 - {TRANSLATE_EN}\n'
+
+    text += f'F4 - {PASTE_BUFFER}\n'
+    text += f'F5 - {CLEAR}\n'
     text += 'Ctrl+c - Копировать\n'
     text += 'Ctrl+v - Вставить\n'
     text += 'Enter - Переместить курсор на поле ввода текста\n'
+    text += 'QWQWQWQ'
     info_window = ctk.CTkToplevel(program)
     info_window.title("Помощь")
 
@@ -100,8 +108,18 @@ def on_key_press(program, event, value_1, value_2):
         click_translation(program, 'ru', value_1, value_2)
     if event.keysym == 'F3':
         click_translation(program, 'en', value_1, value_2)
+    if event.keysym == 'F4':
+        click_button_byfer(value_1)
+    if event.keysym == 'F5':
+        click_button_clear(value_1, value_2)
     # if event.keysym == 'Button-1':
     #     print(111111111)
+
+
+def open_link(event, url):
+    """Функция для открытия ссылки"""
+    # print(event)
+    webbrowser.open_new(url)  # Вставьте нужную ссылку
 
 
 if __name__ == '__main__':
@@ -110,7 +128,7 @@ if __name__ == '__main__':
     root.title(TITLE)
     root.resizable(False, False)  # Запрещаем изменение размера окна
     root.option_add('*Font', FONT)
-    root.geometry("800x510")  # Ширина 300 пикселей, высота 200 пикселей
+    root.geometry("800x560")  # Ширина 300 пикселей, высота 200 пикселей
 
     # --- frame_1 -------------------------------------
     frame_1 = ctk.CTkFrame(root)
@@ -152,12 +170,12 @@ if __name__ == '__main__':
     # --- frame_4 -------------------------------------
     frame_4 = ctk.CTkFrame(root)
     button_byfer = ctk.CTkButton(
-        frame_4, text='Вставить из буфера',
+        frame_4, text=PASTE_BUFFER,
         fg_color="slategray", hover_color="darkslategray",
         text_color=TEXT_COLOR,
         command=lambda: click_button_byfer(text_1))
     button_clear = ctk.CTkButton(
-        frame_4, text='Очистить',
+        frame_4, text=CLEAR,
         fg_color="slategray", hover_color="darkslategray",
         text_color=TEXT_COLOR,
         command=lambda: click_button_clear(text_1, text_2))
@@ -178,6 +196,20 @@ if __name__ == '__main__':
     button_exit.pack(side="left", padx=10)
     # --- / frame_4 -----------------------------------
 
+    # --- frame_5 -------------------------------------
+    frame_5 = ctk.CTkFrame(root)
+    link_label = ctk.CTkLabel(
+        frame_5, text=GITHUB, text_color="blue",
+        cursor="hand2", font=FONT)
+    link_label_opisanie = ctk.CTkLabel(
+        frame_5, text='ссылка на репозиторий github:',
+        cursor="hand2", font=FONT)
+    link_label.bind(
+        "<Button-1>", lambda event: open_link(event, GITHUB))
+    link_label_opisanie.pack(side="left", padx=10)
+    link_label.pack(side="left", padx=10)
+    # --- / frame_5 -----------------------------------
+
     root.bind("<KeyPress>", lambda event: on_key_press(
         root, event, text_1, text_2))
     # root.bind("<Button-3>", context_menu)
@@ -185,5 +217,6 @@ if __name__ == '__main__':
     frame_2.pack(pady=(0, 10), padx=(10, 10))
     frame_3.pack(pady=(0, 15))
     frame_4.pack(pady=(0, 10))
+    frame_5.pack(pady=(10, 10))
     click_translation(root, 'ru', text_1, text_2)  # переводить текст из буфера
     root.mainloop()
