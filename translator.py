@@ -81,7 +81,6 @@ def help_text(program):
     text += 'Ctrl+c - Копировать\n'
     text += 'Ctrl+v - Вставить\n'
     text += 'Enter - Переместить курсор на поле ввода текста\n'
-    text += 'QWQWQWQ'
     info_window = ctk.CTkToplevel(program)
     info_window.title("Помощь")
 
@@ -202,7 +201,7 @@ if __name__ == '__main__':
         frame_5, text=GITHUB, text_color="blue",
         cursor="hand2", font=FONT)
     link_label_opisanie = ctk.CTkLabel(
-        frame_5, text='ссылка на репозиторий github:',
+        frame_5, text='Pепозиторий github:',
         cursor="hand2", font=FONT)
     link_label.bind(
         "<Button-1>", lambda event: open_link(event, GITHUB))
