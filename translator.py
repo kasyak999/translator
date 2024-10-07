@@ -111,8 +111,6 @@ def on_key_press(program, event, value_1, value_2):
         click_button_byfer(value_1)
     elif event.keysym == 'F5':
         click_button_clear(value_1, value_2)
-    # if event.keysym == 'Button-1':
-    #     print(111111111)
 
 
 def open_link(event, url):
@@ -217,6 +215,6 @@ if __name__ == '__main__':
     frame_3.pack(pady=(0, 15))
     frame_4.pack(pady=(0, 10))
     frame_5.pack(pady=(10, 10))
-    
+
     click_translation(root, 'ru', text_1, text_2)  # переводить текст из буфера
     root.mainloop()
