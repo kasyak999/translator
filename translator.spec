@@ -5,7 +5,7 @@ a = Analysis(
     ['translator.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('words/en.json', 'words'), ('words/ru.json', 'words')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

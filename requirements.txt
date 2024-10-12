@@ -15,6 +15,7 @@ idna==2.10
 packaging==24.1
 pyinstaller==6.10.0
 pyinstaller-hooks-contrib==2024.8
+pyspellchecker==0.8.1
 rfc3986==1.5.0
 setuptools==75.1.0
 sniffio==1.3.1

@@ -1,5 +1,6 @@
 """Переводчик с любых языков на русский и английский язык"""
 import os
+import sys
 import tkinter as tk
 from tkinter import messagebox
 import webbrowser
@@ -13,7 +14,7 @@ BUFFER = os.popen('xsel -o').read()  # Получаем значение из б
 WIDTH_TEXT = 800
 HEIGHT_TEXT = 250
 HEIGHT = 8
-TITLE = 'Переводчик v1.4.1'
+TITLE = 'Переводчик v1.5'
 TEXT_COLOR = 'whitesmoke'
 FONT = ("Arial", 20)
 PASTE_BUFFER = 'Вставить из буфера'
@@ -23,6 +24,10 @@ GITHUB = 'https://github.com/kasyak999/translator'
 # Инициализация переводчика
 translator = Translator()
 LABEL_WIDTH = 190
+TRANSLATE_RU = 'Перевести 🇷🇺'
+TRANSLATE_EN = 'Перевести 🇺🇸'
+SPELLING_RU = 'Проверка орфографии 🇷🇺'
+SPELLING_EN = 'Проверка орфографии 🇺🇸'
 
 
 def click_translation(program, language: str, value_1, value_2):
@@ -76,9 +81,10 @@ def help_text(program):
     text += 'F1 - Помощь\n'
     text += f'F2 - {TRANSLATE_RU}\n'
     text += f'F3 - {TRANSLATE_EN}\n'
-
-    text += f'F4 - {PASTE_BUFFER}\n'
-    text += f'F5 - {CLEAR}\n'
+    text += f'F4 - {SPELLING_RU}\n'
+    text += f'F5 - {SPELLING_EN}\n'
+    text += f'F6 - {PASTE_BUFFER}\n'
+    text += f'F7 - {CLEAR}\n'
     text += 'Ctrl+c - Копировать\n'
     text += 'Ctrl+v - Вставить\n'
     text += 'Enter - Переместить курсор на поле ввода текста\n'
@@ -109,8 +115,12 @@ def on_key_press(program, event, value_1, value_2):
     elif event.keysym == 'F3':
         click_translation(program, 'en', value_1, value_2)
     elif event.keysym == 'F4':
-        click_button_byfer(value_1)
+        spell_checking(value_1, value_2)
     elif event.keysym == 'F5':
+        spell_checking(value_1, value_2, 'en')
+    elif event.keysym == 'F6':
+        click_button_byfer(value_1)
+    elif event.keysym == 'F7':
         click_button_clear(value_1, value_2)
 
 
@@ -122,14 +132,18 @@ def open_link(event, url):
 
 def spell_checking(value_1, value_2, language='ru'):
     """Проверка орфографии"""
-    SPELL = SpellChecker(language=language)
+    spell = SpellChecker(language=None)
+    if language == 'ru':
+        spell.word_frequency.load_dictionary('words/ru.json')
+    else:
+        spell.word_frequency.load_dictionary('words/en.json')
     # result = spell.candidates(value)  # проверка одного слова
     text_input = value_1.get("1.0", 'end')
     result = []
     words = text_input.split()
-    mistakes = SPELL.unknown(words)
+    mistakes = spell.unknown(words)
     for word in words:
-        correction = SPELL.correction(word)
+        correction = spell.correction(word)
         if word in mistakes and correction is not None:
             word = correction
         result.append(word)
@@ -139,6 +153,15 @@ def spell_checking(value_1, value_2, language='ru'):
     value_2.insert('end', ' '.join(result))
     value_2.configure(state="disabled")
 
+
+def resource_path(relative_path):
+    """Получить абсолютный путь к ресурсам, работая как в IDE, так и в скомпилированном приложении"""
+    try:
+        base_path = sys._MEIPASS  # Получаем временную папку, если программа скомпилирована
+    except Exception:
+        base_path = os.path.abspath(".")  # Получаем текущую директорию, если не скомпилировано
+
+    return os.path.join(base_path, relative_path)
 
 if __name__ == '__main__':
     ctk.set_appearance_mode("dark")  # темная тема
@@ -175,20 +198,20 @@ if __name__ == '__main__':
     # --- frame_3 -------------------------------------
     frame_3 = ctk.CTkFrame(root)
     button_ru = ctk.CTkButton(
-        frame_3, text='Перевести 🇷🇺',
+        frame_3, text=TRANSLATE_RU,
         fg_color="green", hover_color="darkgreen", text_color=TEXT_COLOR,
         command=lambda: click_translation(root, 'ru', text_1, text_2))
     button_en = ctk.CTkButton(
-        frame_3, text='Перевести 🇺🇸',
+        frame_3, text=TRANSLATE_EN,
         fg_color="blue", hover_color="darkblue", text_color=TEXT_COLOR,
         command=lambda: click_translation(root, 'en', text_1, text_2))
     button_spelling_ru = ctk.CTkButton(
-        frame_3, text='Проверка орфографии 🇷🇺',
+        frame_3, text=SPELLING_RU,
         fg_color="slateblue", hover_color="darkslateblue",
         text_color=TEXT_COLOR,
         command=lambda: spell_checking(text_1, text_2))
     button_spelling_en = ctk.CTkButton(
-        frame_3, text='Проверка орфографии 🇺🇸',
+        frame_3, text=SPELLING_EN,
         fg_color="slateblue", hover_color="darkslateblue",
         text_color=TEXT_COLOR,
         command=lambda: spell_checking(text_1, text_2, 'en'))
