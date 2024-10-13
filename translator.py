@@ -1,27 +1,33 @@
 """Переводчик с любых языков на русский и английский язык"""
 import os
+import sys
 import tkinter as tk
 from tkinter import messagebox
 import webbrowser
 import httpcore
 from googletrans import Translator  # type: ignore
 import customtkinter as ctk  # type: ignore
+from spellchecker import SpellChecker
 
 
 BUFFER = os.popen('xsel -o').read()  # Получаем значение из буфера обмена
 WIDTH_TEXT = 800
+HEIGHT_TEXT = 250
 HEIGHT = 8
-TITLE = 'Переводчик v1.4.1'
+TITLE = 'Переводчик v1.5'
 TEXT_COLOR = 'whitesmoke'
 FONT = ("Arial", 20)
-TRANSLATE_RU = 'Перевести на русский 🇷🇺'
-TRANSLATE_EN = 'Перевести на английский 🇺🇸'
 PASTE_BUFFER = 'Вставить из буфера'
 CLEAR = 'Очистить'
 INFO_TEXT = 'Переводчик с любых языков на русский и английский язык'
 GITHUB = 'https://github.com/kasyak999/translator'
 # Инициализация переводчика
 translator = Translator()
+LABEL_WIDTH = 190
+TRANSLATE_RU = 'Перевести 🇷🇺'
+TRANSLATE_EN = 'Перевести 🇺🇸'
+SPELLING_RU = 'Проверка орфографии 🇷🇺'
+SPELLING_EN = 'Проверка орфографии 🇺🇸'
 
 
 def click_translation(program, language: str, value_1, value_2):
@@ -75,9 +81,10 @@ def help_text(program):
     text += 'F1 - Помощь\n'
     text += f'F2 - {TRANSLATE_RU}\n'
     text += f'F3 - {TRANSLATE_EN}\n'
-
-    text += f'F4 - {PASTE_BUFFER}\n'
-    text += f'F5 - {CLEAR}\n'
+    text += f'F4 - {SPELLING_RU}\n'
+    text += f'F5 - {SPELLING_EN}\n'
+    text += f'F6 - {PASTE_BUFFER}\n'
+    text += f'F7 - {CLEAR}\n'
     text += 'Ctrl+c - Копировать\n'
     text += 'Ctrl+v - Вставить\n'
     text += 'Enter - Переместить курсор на поле ввода текста\n'
@@ -108,8 +115,12 @@ def on_key_press(program, event, value_1, value_2):
     elif event.keysym == 'F3':
         click_translation(program, 'en', value_1, value_2)
     elif event.keysym == 'F4':
-        click_button_byfer(value_1)
+        spell_checking(value_1, value_2)
     elif event.keysym == 'F5':
+        spell_checking(value_1, value_2, 'en')
+    elif event.keysym == 'F6':
+        click_button_byfer(value_1)
+    elif event.keysym == 'F7':
         click_button_clear(value_1, value_2)
 
 
@@ -119,33 +130,64 @@ def open_link(event, url):
     webbrowser.open_new(url)  # Вставьте нужную ссылку
 
 
+def spell_checking(value_1, value_2, language='ru'):
+    """Проверка орфографии"""
+    spell = SpellChecker(language=None)
+    if language == 'ru':
+        dict_path = '/words/ru.json'
+    else:
+        dict_path = '/words/en.json'
+    try:  # Если запущено из исполняемого файла
+        spell.word_frequency.load_dictionary(
+            os.path.dirname(sys.executable) + dict_path)
+    except FileNotFoundError:  # Если запущено из скрипта
+        spell.word_frequency.load_dictionary('dist' + dict_path)
+    # result = spell.candidates(value)  # проверка одного слова
+    text_input = value_1.get("1.0", 'end')
+    result = []
+    words = text_input.split()
+    mistakes = spell.unknown(words)
+    for word in words:
+        correction = spell.correction(word)
+        if word in mistakes and correction is not None:
+            word = correction
+        result.append(word)
+
+    value_2.configure(state="normal")
+    value_2.delete("1.0", 'end')  # Очищаем содержимое текстового поля
+    value_2.insert('end', ' '.join(result))
+    value_2.configure(state="disabled")
+
+
 if __name__ == '__main__':
     ctk.set_appearance_mode("dark")  # темная тема
     root = ctk.CTk()
     root.title(TITLE)
     root.resizable(False, False)  # Запрещаем изменение размера окна
     root.option_add('*Font', FONT)
-    root.geometry("800x560")  # Ширина 300 пикселей, высота 200 пикселей
+    root.geometry("1020x670")  # Ширина 300 пикселей, высота 200 пикселей
 
     # --- frame_1 -------------------------------------
     frame_1 = ctk.CTkFrame(root)
-    label_1 = ctk.CTkLabel(frame_1, text="Текст: ", width=90, font=FONT)
+    label_1 = ctk.CTkLabel(
+        frame_1, text="Введите текст: ", font=FONT, width=LABEL_WIDTH)
     text_1 = ctk.CTkTextbox(
-        frame_1, width=WIDTH_TEXT, font=FONT)
+        frame_1, width=WIDTH_TEXT, height=HEIGHT_TEXT, font=FONT)
     text_1.insert(tk.END, BUFFER)
 
-    label_1.pack(side="left", padx=20)
+    label_1.pack(side="left")
     text_1.pack(side="left")
     # --- / frame_1 -----------------------------------
 
     # --- frame_2 -------------------------------------
     frame_2 = ctk.CTkFrame(root)
-    label_2 = ctk.CTkLabel(frame_2, text="Перевод: ", width=90, font=FONT)
+    label_2 = ctk.CTkLabel(
+        frame_2, text="Ответ: ", font=FONT, width=LABEL_WIDTH)
     text_2 = ctk.CTkTextbox(
-        frame_2, width=WIDTH_TEXT, font=FONT)
+        frame_2, width=WIDTH_TEXT, height=HEIGHT_TEXT, font=FONT)
     text_2.configure(state="disabled")
 
-    label_2.pack(side="left", padx=20)
+    label_2.pack(side="left")
     text_2.pack(side="left")
     # --- / frame_2 -----------------------------------
 
@@ -159,9 +201,21 @@ if __name__ == '__main__':
         frame_3, text=TRANSLATE_EN,
         fg_color="blue", hover_color="darkblue", text_color=TEXT_COLOR,
         command=lambda: click_translation(root, 'en', text_1, text_2))
+    button_spelling_ru = ctk.CTkButton(
+        frame_3, text=SPELLING_RU,
+        fg_color="slateblue", hover_color="darkslateblue",
+        text_color=TEXT_COLOR,
+        command=lambda: spell_checking(text_1, text_2))
+    button_spelling_en = ctk.CTkButton(
+        frame_3, text=SPELLING_EN,
+        fg_color="slateblue", hover_color="darkslateblue",
+        text_color=TEXT_COLOR,
+        command=lambda: spell_checking(text_1, text_2, 'en'))
 
     button_ru.pack(side="left", padx=10)
     button_en.pack(side="left", padx=10)
+    button_spelling_ru.pack(side="left", padx=10)
+    button_spelling_en.pack(side="left", padx=10)
     # --- / frame_3 -----------------------------------
 
     # --- frame_4 -------------------------------------
