@@ -134,9 +134,14 @@ def spell_checking(value_1, value_2, language='ru'):
     """Проверка орфографии"""
     spell = SpellChecker(language=None)
     if language == 'ru':
-        spell.word_frequency.load_dictionary('words/ru.json')
+        dict_path = '/words/ru.json'
     else:
-        spell.word_frequency.load_dictionary('words/en.json')
+        dict_path = '/words/en.json'
+    try:  # Если запущено из исполняемого файла
+        spell.word_frequency.load_dictionary(
+            os.path.dirname(sys.executable) + dict_path)
+    except FileNotFoundError:  # Если запущено из скрипта
+        spell.word_frequency.load_dictionary('dist' + dict_path)
     # result = spell.candidates(value)  # проверка одного слова
     text_input = value_1.get("1.0", 'end')
     result = []
@@ -153,15 +158,6 @@ def spell_checking(value_1, value_2, language='ru'):
     value_2.insert('end', ' '.join(result))
     value_2.configure(state="disabled")
 
-
-def resource_path(relative_path):
-    """Получить абсолютный путь к ресурсам, работая как в IDE, так и в скомпилированном приложении"""
-    try:
-        base_path = sys._MEIPASS  # Получаем временную папку, если программа скомпилирована
-    except Exception:
-        base_path = os.path.abspath(".")  # Получаем текущую директорию, если не скомпилировано
-
-    return os.path.join(base_path, relative_path)
 
 if __name__ == '__main__':
     ctk.set_appearance_mode("dark")  # темная тема
