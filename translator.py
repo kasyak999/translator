@@ -30,7 +30,10 @@ SPELLING_RU = 'Проверка орфографии 🇷🇺'
 SPELLING_EN = 'Проверка орфографии 🇺🇸'
 
 
-def click_translation(program, language: str, value_1, value_2):
+def click_translation(
+    program: ctk.CTk, language: str, value_1: ctk.CTkTextbox,
+    value_2: ctk.CTkTextbox
+):
     """Перевод текста"""
     text_input = value_1.get("1.0", 'end')
     if text_input:
@@ -49,7 +52,7 @@ def click_translation(program, language: str, value_1, value_2):
             value_2.configure(state="disabled")
 
 
-def click_button_byfer(value_1):
+def click_button_byfer(value_1: ctk.CTkTextbox):
     """Вставить текст из буфера обмена"""
     try:
         byfer = value_1.clipboard_get()  # Получаем текст из буфера обмена
@@ -60,7 +63,7 @@ def click_button_byfer(value_1):
     value_1.insert('end', byfer)  # Вставляем текст из буфера
 
 
-def click_button_clear(value_1, value_2):
+def click_button_clear(value_1: ctk.CTkTextbox, value_2: ctk.CTkTextbox):
     """Очистить поле"""
     value_1.delete("1.0", tk.END)
     value_2.configure(state="normal")
@@ -68,12 +71,12 @@ def click_button_clear(value_1, value_2):
     value_2.configure(state="disabled")
 
 
-def close_app(program):
+def close_app(program: ctk.CTk):
     """Закрыть программу"""
     program.destroy()
 
 
-def help_text(program):
+def help_text(program: ctk.CTk):
     """Горячии клавиши"""
     text = f'{INFO_TEXT}\n\n'
     text += 'Горячие клавиши:\n'
@@ -101,7 +104,10 @@ def help_text(program):
     close_button.pack(pady=(10, 10))
 
 
-def on_key_press(program, event, value_1, value_2):
+def on_key_press(
+    program: ctk.CTk, event: tk.Event, value_1: ctk.CTkTextbox,
+    value_2: ctk.CTkTextbox
+):
     """Обработка нажатия клавиш"""
     if event.keysym == 'Return':  # Проверяем, нажата ли клавиша Enter
         value_1.focus_set()  # Устанавливаем фокус на value_1
@@ -124,13 +130,14 @@ def on_key_press(program, event, value_1, value_2):
         click_button_clear(value_1, value_2)
 
 
-def open_link(event, url):
+def open_link(event: tk.Event, url: str = GITHUB):
     """Функция для открытия ссылки"""
-    # print(event)
     webbrowser.open_new(url)  # Вставьте нужную ссылку
 
 
-def spell_checking(value_1, value_2, language='ru'):
+def spell_checking(
+    value_1: ctk.CTkTextbox, value_2: ctk.CTkTextbox, language: str = 'ru'
+):
     """Проверка орфографии"""
     spell = SpellChecker(language=None)
     if language == 'ru':
@@ -256,7 +263,7 @@ if __name__ == '__main__':
         frame_5, text='Pепозиторий github:',
         cursor="hand2", font=FONT)
     link_label.bind(
-        "<Button-1>", lambda event: open_link(event, GITHUB))
+        "<Button-1>", lambda event: open_link(event))
     link_label_opisanie.pack(side="left", padx=10)
     link_label.pack(side="left", padx=10)
     # --- / frame_5 -----------------------------------
